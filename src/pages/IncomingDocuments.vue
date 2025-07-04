@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-pa-md bg-grey-2 flex flex-center">
-    <q-card class="outgoing-card q-pa-lg q-mt-xl">
+    <q-card class="incoming-card q-pa-lg q-mt-xl">
       <div class="row justify-center q-mb-md">
         <q-btn-toggle
           v-model="activeTab"
@@ -20,8 +20,8 @@
         <div class="row items-center">
           <div class="accent-bar q-mr-md"></div>
           <div>
-            <div class="text-h5 text-weight-bold text-dark">OUTGOING</div>
-            <div class="text-grey-6 text-body2">Track outgoing documents efficiently</div>
+            <div class="text-h5 text-weight-bold text-dark">INCOMING</div>
+            <div class="text-grey-6 text-body2">Track incoming documents efficiently</div>
           </div>
         </div>
         <q-btn
@@ -127,7 +127,7 @@
     <q-dialog v-model="showAddDialog">
       <q-card style="min-width: 350px; max-width: 90vw">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Add Outgoing Document</div>
+          <div class="text-h6">Add Incoming Document</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
@@ -231,13 +231,17 @@ import { uploadToCloudinary } from 'boot/cloudinaryUpload';
 import { useRouter } from 'vue-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
-
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 
+toastr.options = {
+  closeButton: true,
+  progressBar: true,
+  positionClass: 'toast-bottom-right',
+};
 const router = useRouter();
 
-const activeTab = ref('outgoing');
+const activeTab = ref('incoming');
 const search = ref('');
 const showAddDialog = ref(false);
 const showImagePreview = ref(false);
@@ -263,11 +267,10 @@ const rows = ref<DocumentRow[]>([]);
 const offlineQueueKey = 'offlineDocumentsQueue';
 
 const handleTabChange = async (value: string) => {
-  if (value === 'incoming') {
-    await router.push({ name: 'Incoming' });
+  if (value === 'outgoing') {
+    await router.push({ name: 'outgoing' });
   }
 };
-
 onMounted(async () => {
   const currentUser = await new Promise<User | null>((resolve) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -286,7 +289,7 @@ onMounted(async () => {
     await syncOfflineDocuments();
 
     const qSnap = await getDocs(
-      query(collection(db, 'outgoingDocuments'), where('uid', '==', currentUser.uid)),
+      query(collection(db, 'incomingDocuments'), where('uid', '==', currentUser.uid)),
     );
 
     rows.value = qSnap.docs.map((doc) => {
@@ -309,6 +312,7 @@ onMounted(async () => {
   }
 });
 
+// Sync offline documents
 window.addEventListener('online', () => {
   void syncOfflineDocuments();
 });
@@ -319,7 +323,7 @@ async function syncOfflineDocuments() {
 
   for (const doc of queue) {
     try {
-      await addDoc(collection(db, 'outgoingDocuments'), {
+      await addDoc(collection(db, 'incomingDocuments'), {
         ...doc,
         uid: auth.currentUser?.uid || null,
         date: Timestamp.fromDate(new Date(doc.date)),
@@ -392,7 +396,7 @@ async function addDocument() {
     localStorage.setItem('offlineDocuments', JSON.stringify(rows.value));
 
     if (navigator.onLine) {
-      await addDoc(collection(db, 'outgoingDocuments'), {
+      await addDoc(collection(db, 'incomingDocuments'), {
         ...newDoc,
         uid: auth.currentUser?.uid || null,
         date: Timestamp.fromDate(new Date(form.value.date)),
@@ -418,22 +422,10 @@ async function addDocument() {
     console.error('Add error:', error);
   }
 }
-toastr.options = {
-  closeButton: true,
-  progressBar: true,
-  positionClass: 'toast-bottom-right',
-};
 </script>
 
 <style scoped>
-.btn-toggle {
-  border-radius: 8px;
-  background-color: #e3f2fd;
-  padding: 4px;
-  max-width: 300px;
-}
-
-.outgoing-card {
+.incoming-card {
   max-width: 900px;
   width: 100%;
   border-radius: 18px;
