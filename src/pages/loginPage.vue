@@ -8,12 +8,17 @@
         label="Sign in with Google"
         @click="loginWithGoogle"
         class="full-width"
+        :disable="!isOnline"
       />
+      <div v-if="!isOnline" class="text-negative text-center q-mt-md">
+        You are offline. Please connect to the internet to login.
+      </div>
     </q-card>
   </q-page>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from 'boot/firebase';
@@ -26,8 +31,20 @@ toastr.options = {
   positionClass: 'toast-bottom-right',
 };
 const router = useRouter();
+const isOnline = ref(navigator.onLine);
+
+window.addEventListener('online', () => {
+  isOnline.value = true;
+});
+window.addEventListener('offline', () => {
+  isOnline.value = false;
+});
 
 async function loginWithGoogle() {
+  if (!isOnline.value) {
+    toastr.error('You are offline. Please connect to the internet to login.', 'Offline');
+    return;
+  }
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
