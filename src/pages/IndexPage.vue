@@ -123,6 +123,19 @@
           </q-td>
         </template>
 
+        <template v-slot:body-cell-actions="props">
+          <q-td align="center">
+            <q-btn
+              size="sm"
+              color="primary"
+              icon="edit"
+              flat
+              round
+              @click="openEditDialog(props.row, props.rowIndex)"
+            />
+          </q-td>
+        </template>
+
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm q-pa-lg">
             <q-icon size="2em" name="sentiment_dissatisfied" color="grey-5" />
@@ -238,6 +251,59 @@
       </q-card>
     </q-dialog>
   </q-page>
+  <q-dialog v-model="showEditDialog">
+    <q-card style="min-width: 350px; max-width: 90vw">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Edit Outgoing Document</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+      <q-separator />
+      <q-card-section>
+        <q-form @submit.prevent="saveEdit">
+          <q-input
+            v-model="editForm.particular"
+            label="Particular"
+            dense
+            outlined
+            class="q-mb-md"
+            required
+            autofocus
+          />
+          <q-input
+            v-model="editForm.date"
+            label="Date"
+            dense
+            outlined
+            class="q-mb-md"
+            type="date"
+            required
+          />
+          <q-input
+            v-model="editForm.receivingOffice"
+            label="Receiving Office"
+            dense
+            outlined
+            class="q-mb-md"
+            required
+          />
+          <q-input
+            v-model="editForm.receivingPersonnel"
+            label="Receiving Personnel"
+            dense
+            outlined
+            class="q-mb-md"
+            required
+          />
+          <!-- Optionally add image editing here -->
+          <div class="row justify-end q-gutter-sm q-mt-md">
+            <q-btn flat label="Cancel" color="grey-7" v-close-popup />
+            <q-btn type="submit" color="primary" label="Save" />
+          </div>
+        </q-form>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
   <q-dialog v-model="showImagePreview">
     <q-card style="max-width: 90vw; max-height: 90vh; position: relative">
       <q-btn
@@ -264,19 +330,28 @@
     </q-card>
   </q-dialog>
 </template>
+
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { db, auth } from 'boot/firebase';
-import { collection, getDocs, query, addDoc, Timestamp, where, orderBy } from 'firebase/firestore';
-
+import {
+  collection,
+  getDocs,
+  query,
+  addDoc,
+  Timestamp,
+  where,
+  orderBy,
+  updateDoc,
+} from 'firebase/firestore';
 import { uploadToCloudinary } from 'boot/cloudinaryUpload';
 import { useRouter } from 'vue-router';
 import { onAuthStateChanged } from 'firebase/auth';
-
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import { idbGet, idbSet, idbRemove } from 'boot/idb';
 import { useQuasar, QSpinnerCube } from 'quasar';
+
 const $q = useQuasar();
 const isSaving = ref(false);
 const isSubmitting = ref(false);
@@ -291,19 +366,13 @@ const router = useRouter();
 const activeTab = ref('outgoing');
 const search = ref('');
 const showAddDialog = ref(false);
+const showEditDialog = ref(false);
 const showImagePreview = ref(false);
 const previewImageUrl = ref('');
 const cameraInput = ref<HTMLInputElement>();
 const galleryInput = ref<HTMLInputElement>();
 
-const form = ref({
-  particular: '',
-  date: '',
-  receivingOffice: '',
-  receivingPersonnel: '',
-  imageFile: null as File | null,
-});
-
+// Types
 interface DocumentRow {
   particular: string;
   date: string;
@@ -311,14 +380,82 @@ interface DocumentRow {
   receivingPersonnel: string;
   imageUrl?: string;
 }
+interface FormRow extends DocumentRow {
+  imageFile: File | null;
+}
+
+// State
+const form = ref<FormRow>({
+  particular: '',
+  date: '',
+  receivingOffice: '',
+  receivingPersonnel: '',
+  imageUrl: '',
+  imageFile: null,
+});
+const editForm = ref<FormRow>({
+  particular: '',
+  date: '',
+  receivingOffice: '',
+  receivingPersonnel: '',
+  imageUrl: '',
+  imageFile: null,
+});
+const editIndex = ref<number | null>(null);
+
 const pagination = ref({
   page: 1,
   rowsPerPage: 5,
 });
-
 const rows = ref<DocumentRow[]>([]);
 const offlineQueueKey = 'offlineOutgoingQueue';
 const isOnline = ref(navigator.onLine);
+
+// Edit dialog logic
+function openEditDialog(row: DocumentRow, index: number) {
+  editForm.value = { ...row, imageFile: null }; // imageFile is not edited here
+  editIndex.value = index;
+  showEditDialog.value = true;
+}
+
+async function saveEdit() {
+  if (editIndex.value === null) return;
+  const row = rows.value[editIndex.value];
+  if (!row) return;
+
+  // Update Firestore if online
+  if (navigator.onLine) {
+    const snapshot = await getDocs(
+      query(
+        collection(db, 'outgoingDocuments'),
+        where('uid', '==', auth.currentUser?.uid || ''),
+
+        where('particular', '==', row.particular),
+        where('date', '==', row.date),
+        where('receivingOffice', '==', row.receivingOffice),
+      ),
+    );
+    for (const docSnap of snapshot.docs) {
+      await updateDoc(docSnap.ref, {
+        particular: editForm.value.particular,
+        date: editForm.value.date,
+        receivingOffice: editForm.value.receivingOffice,
+        receivingPersonnel: editForm.value.receivingPersonnel,
+        // imageUrl: editForm.value.imageUrl, // add if you want to edit image
+      });
+    }
+  }
+  // Update local rows
+  rows.value[editIndex.value] = {
+    particular: editForm.value.particular,
+    date: editForm.value.date,
+    receivingOffice: editForm.value.receivingOffice,
+    receivingPersonnel: editForm.value.receivingPersonnel,
+    imageUrl: editForm.value.imageUrl ?? '', // ensure string, not undefined
+  };
+  showEditDialog.value = false;
+  toastr.success('Document updated!');
+}
 
 // ✅ Fix ESLint - Async wrapper for 'online' event
 window.addEventListener('online', () => {
@@ -378,7 +515,6 @@ onMounted(() => {
       if (navigator.onLine) {
         await syncOfflineDocuments();
         await fetchFirestoreData(user.uid);
-        console.log('👤 Authenticated UID:', user.uid);
       } else {
         const cached = await idbGet<DocumentRow[]>('offlineDocuments');
         if (cached) {
@@ -390,7 +526,6 @@ onMounted(() => {
 });
 
 async function fetchFirestoreData(uid: string) {
-  console.log('🔄 Fetching Firestore data for UID:', uid);
   try {
     const snapshot = await getDocs(
       query(
@@ -422,7 +557,6 @@ async function fetchFirestoreData(uid: string) {
 
     rows.value = results;
     await idbSet('offlineDocuments', results);
-    console.log('✅ Data fetched and cached:', results.length);
   } catch (error) {
     console.error('❌ Error fetching Firestore data:', error);
     toastr.error('Failed to fetch documents from Firestore.');
@@ -515,8 +649,8 @@ const columns = [
     field: 'receivingPersonnel',
   },
   { name: 'imageUrl', label: 'Supporting Image', align: 'left' as const, field: 'imageUrl' },
+  { name: 'actions', label: 'Actions', align: 'center' as const, field: '' }, // <-- Add this
 ];
-
 const filteredRows = computed(() => {
   const q = search.value.toLowerCase();
   return rows.value.filter(

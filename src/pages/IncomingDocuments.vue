@@ -369,7 +369,6 @@ onMounted(() => {
 });
 
 async function fetchFirestoreData(uid: string) {
-  console.log('Fetching Firestore data for UID:', uid);
   const qSnap = await getDocs(
     query(
       collection(db, 'incomingDocuments'),
@@ -377,7 +376,6 @@ async function fetchFirestoreData(uid: string) {
       orderBy('created_at', 'asc'),
     ),
   );
-  console.log('Firestore docs found:', qSnap.docs.length);
 
   rows.value = qSnap.docs.map((doc) => {
     const data = doc.data();
@@ -437,13 +435,11 @@ async function syncOfflineDocuments() {
         finalImageUrl = await uploadToCloudinary(file);
       }
       await addDoc(collection(db, 'incomingDocuments'), {
-        ...newDoc,
+        ...doc,
         uid: auth.currentUser?.uid || null,
         date: Timestamp.fromDate(new Date(form.value.date)),
         created_at: Timestamp.now(), // ✅ Add this
       });
-
-      console.log('Sync: Firestore write succeeded for:', doc);
       syncedDocs.push({ ...doc, imageUrl: finalImageUrl });
     } catch (e) {
       console.error('Sync: Firestore write failed:', e);

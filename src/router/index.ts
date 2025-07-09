@@ -36,6 +36,14 @@ export default defineRouter(function (/* { store, ssrContext } */) {
       next();
       return;
     }
+
+    // Allow admin access if admin code is set
+    if (localStorage.getItem('isAdmin') === 'true') {
+      next();
+      return;
+    }
+
+    // Otherwise, check Firebase auth
     return new Promise((resolve) => {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         unsubscribe();
