@@ -99,6 +99,14 @@
           </q-td>
         </template>
 
+        <template v-slot:body-cell-receivingOffice="props">
+          <q-td>
+            <q-chip color="info" text-color="white" dense class="ant-chip" icon="business">
+              {{ props.row.receivingOffice }}
+            </q-chip>
+          </q-td>
+        </template>
+
         <template v-slot:body-cell-imageUrl="props">
           <q-td>
             <div
@@ -120,6 +128,83 @@
               />
             </div>
             <span v-else class="text-grey-5">No image</span>
+          </q-td>
+        </template>
+
+        <!-- Add this template slot to your q-table -->
+        <template v-slot:body-cell-actions="props">
+          <q-td align="center">
+            <!-- Edit Button -->
+            <q-btn
+              size="sm"
+              color="primary"
+              flat
+              round
+              @click="openEditDialog(props.row, props.rowIndex)"
+              class="q-ml-xs"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 100 100">
+                <path
+                  d="M19.434,93.975c-5.265,0-9.548-4.283-9.548-9.548V27.523c0-5.265,4.283-9.548,9.548-9.548h47.639l5.46-5.461 c1.562-1.561,3.753-2.456,6.012-2.456c2.261,0,4.452,0.896,6.012,2.458l7.068,7.068c1.604,1.604,2.489,3.739,2.489,6.011 c0,2.271-0.885,4.406-2.489,6.011l-5.738,5.738v47.082c0,5.265-4.283,9.548-9.549,9.548H19.434z"
+                  opacity=".35"
+                ></path>
+                <path
+                  fill="#f2f2f2"
+                  d="M17.434,91.975c-5.265,0-9.548-4.283-9.548-9.548V25.523c0-5.265,4.283-9.548,9.548-9.548h47.639 l5.46-5.461c1.562-1.561,3.753-2.456,6.012-2.456c2.261,0,4.452,0.896,6.012,2.458l7.068,7.068 c1.604,1.604,2.489,3.739,2.489,6.011c0,2.271-0.885,4.406-2.489,6.011l-5.738,5.738v47.082c0,5.265-4.283,9.548-9.549,9.548 H17.434z"
+                ></path>
+                <path
+                  fill="#d9eeff"
+                  d="M74.337,85.475H17.434c-1.684,0-3.048-1.365-3.048-3.048V25.524c0-1.684,1.365-3.048,3.048-3.048 h56.903c1.684,0,3.048,1.365,3.048,3.048v56.903C77.386,84.11,76.021,85.475,74.337,85.475z"
+                ></path>
+                <rect
+                  width="11.195"
+                  height="9"
+                  x="71.653"
+                  y="18.389"
+                  fill="#f4665c"
+                  transform="rotate(45.001 77.251 22.888)"
+                ></rect>
+                <rect
+                  width="10.969"
+                  height="39.647"
+                  x="52.903"
+                  y="21.928"
+                  fill="#f9b84f"
+                  transform="rotate(45.001 58.388 41.751)"
+                ></rect>
+                <rect
+                  width="11.014"
+                  height="4"
+                  x="68.312"
+                  y="24.32"
+                  fill="#9aa2e6"
+                  transform="rotate(45.001 73.82 26.32)"
+                ></rect>
+                <polygon
+                  fill="#fedeb3"
+                  points="38.006,62.133 40.492,51.891 48.248,59.647"
+                ></polygon>
+                <path
+                  fill="#40396e"
+                  d="M74.337,86.975H17.434c-2.508,0-4.548-2.041-4.548-4.548V25.523c0-2.508,2.04-4.548,4.548-4.548 h49.71l6.925-6.925c1.323-1.322,3.63-1.321,4.949,0l7.071,7.071c1.365,1.365,1.365,3.585,0,4.95l-7.203,7.203v49.153 C78.886,84.935,76.845,86.975,74.337,86.975z M17.434,23.975c-0.854,0-1.548,0.695-1.548,1.548v56.903 c0,0.854,0.694,1.548,1.548,1.548h56.903c0.854,0,1.549-0.694,1.549-1.548V32.653c0-0.398,0.158-0.779,0.439-1.061l7.643-7.643 c0.195-0.195,0.195-0.512,0-0.708l-7.071-7.071c-0.127-0.127-0.275-0.146-0.354-0.146c-0.077,0-0.227,0.019-0.354,0.146 l-7.364,7.364c-0.281,0.281-0.663,0.439-1.061,0.439H17.434z"
+                ></path>
+                <polygon fill="#40396e" points="39.44,56.227 38.006,62.133 43.912,60.7"></polygon>
+              </svg>
+            </q-btn>
+            <!-- Office Update Button -->
+            <q-btn
+              size="sm"
+              color="secondary"
+              flat
+              round
+              @click="openOfficeUpdateDialog(props.row)"
+              class="q-ml-xs"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="#1976d2" />
+                <text x="50" y="57" font-size="32" text-anchor="middle" fill="#fff">+</text>
+              </svg>
+            </q-btn>
           </q-td>
         </template>
 
@@ -263,11 +348,150 @@
       </div>
     </q-card>
   </q-dialog>
+
+  <!-- Edit Dialog -->
+  <q-dialog v-model="showEditDialog">
+    <q-card style="min-width: 350px; max-width: 90vw">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Edit Incoming Document</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+      <q-separator />
+      <q-card-section>
+        <q-form @submit.prevent="saveEdit">
+          <q-input
+            v-model="editForm.particular"
+            label="Particular"
+            dense
+            outlined
+            class="q-mb-md"
+            required
+            autofocus
+          />
+          <q-input
+            v-model="editForm.date"
+            label="Date"
+            dense
+            outlined
+            class="q-mb-md"
+            type="date"
+            required
+          />
+          <q-input
+            v-model="editForm.receivingOffice"
+            label="Receiving Office"
+            dense
+            outlined
+            class="q-mb-md"
+            required
+          />
+          <q-input
+            v-model="editForm.receivingPersonnel"
+            label="Receiving Personnel"
+            dense
+            outlined
+            class="q-mb-md"
+            required
+          />
+          <div class="row justify-end q-gutter-sm q-mt-md">
+            <q-btn flat label="Cancel" color="grey-7" v-close-popup />
+            <q-btn type="submit" color="primary" label="Save" />
+          </div>
+        </q-form>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
+  <!-- Office Update Dialog -->
+  <q-dialog v-model="showOfficeUpdateDialog">
+    <q-card style="min-width: 350px; max-width: 90vw">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Office Update</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+      <q-separator />
+      <q-card-section>
+        <q-form @submit.prevent="saveOfficeUpdate">
+          <q-input
+            v-model="officeUpdateForm.officeName"
+            label="Office Name"
+            dense
+            outlined
+            class="q-mb-md"
+            required
+          />
+          <q-input
+            v-model="officeUpdateForm.receivingPersonnel"
+            label="Receiving Personnel"
+            dense
+            outlined
+            class="q-mb-md"
+            required
+          />
+          <q-input
+            v-model="officeUpdateForm.date"
+            label="Date"
+            dense
+            outlined
+            class="q-mb-md"
+            type="date"
+            required
+          />
+          <div class="q-mb-md">
+            <label class="q-mb-xs">Image</label>
+            <q-btn
+              color="primary"
+              outline
+              icon="photo_library"
+              label="Select Image"
+              @click="officeUpdateImageInput?.click()"
+              class="q-ml-sm"
+            />
+            <input
+              ref="officeUpdateImageInput"
+              type="file"
+              accept="image/*"
+              style="display: none"
+              @change="onOfficeUpdateImageSelected"
+            />
+            <div v-if="officeUpdateForm.imageFile" class="q-mt-sm text-grey-6">
+              Selected: {{ officeUpdateForm.imageFile.name }}
+            </div>
+          </div>
+          <div class="row justify-end q-gutter-sm q-mt-md">
+            <q-btn flat label="Cancel" color="grey-7" v-close-popup />
+            <q-btn
+              type="submit"
+              color="primary"
+              label="Save"
+              :disable="
+                !officeUpdateForm.officeName ||
+                !officeUpdateForm.receivingPersonnel ||
+                !officeUpdateForm.date
+              "
+            />
+          </div>
+        </q-form>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { db, auth } from 'boot/firebase';
-import { collection, getDocs, query, addDoc, Timestamp, where, orderBy } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  query,
+  addDoc,
+  Timestamp,
+  where,
+  orderBy,
+  updateDoc,
+  doc,
+} from 'firebase/firestore';
 
 import { uploadToCloudinary } from 'boot/cloudinaryUpload';
 import { useRouter } from 'vue-router';
@@ -304,12 +528,57 @@ const form = ref({
   imageFile: null as File | null,
 });
 
+// Add these after your existing state variables
+const showEditDialog = ref(false);
+const showOfficeUpdateDialog = ref(false);
+const editIndex = ref<number | null>(null);
+const officeUpdateImageInput = ref<HTMLInputElement>();
+
+// Add these interfaces if not already present
+interface OfficeUpdateRow {
+  officeName: string;
+  receivingPersonnel: string;
+  date: string;
+  imageFile: File | null;
+  imageUrl?: string;
+  data_id: string;
+}
+
+// Add form states
+const editForm = ref<FormRow>({
+  particular: '',
+  date: '',
+  receivingOffice: '',
+  receivingPersonnel: '',
+  imageUrl: '',
+  imageFile: null,
+});
+
+const officeUpdateForm = ref<OfficeUpdateRow>({
+  officeName: '',
+  receivingPersonnel: '',
+  date: '',
+  imageFile: null,
+  imageUrl: '',
+  data_id: '',
+});
+
 interface DocumentRow {
+  id?: string; // Add id property
   particular: string;
   date: string;
   receivingOffice: string;
   receivingPersonnel: string;
   imageUrl?: string;
+}
+// Add FormRow interface
+interface FormRow {
+  particular: string;
+  date: string;
+  receivingOffice: string;
+  receivingPersonnel: string;
+  imageUrl?: string;
+  imageFile: File | null;
 }
 const pagination = ref({
   page: 1,
@@ -317,7 +586,7 @@ const pagination = ref({
 });
 
 const rows = ref<DocumentRow[]>([]);
-const offlineQueueKey = 'offlineoutgoingQueue';
+const offlineQueueKey = 'offlineIncomingQueue';
 const isOnline = ref(navigator.onLine);
 
 // ✅ Fix ESLint - Async wrapper for 'online' event
@@ -380,6 +649,7 @@ async function fetchFirestoreData(uid: string) {
   rows.value = qSnap.docs.map((doc) => {
     const data = doc.data();
     return {
+      id: doc.id, // Add this line
       particular: data.particular,
       date:
         data.date && data.date.toDate ? data.date.toDate().toISOString().split('T')[0] : data.date,
@@ -437,7 +707,7 @@ async function syncOfflineDocuments() {
       await addDoc(collection(db, 'incomingDocuments'), {
         ...doc,
         uid: auth.currentUser?.uid || null,
-        date: Timestamp.fromDate(new Date(form.value.date)),
+        date: Timestamp.fromDate(new Date(doc.date)),
         created_at: Timestamp.now(), // ✅ Add this
       });
       syncedDocs.push({ ...doc, imageUrl: finalImageUrl });
@@ -494,6 +764,7 @@ const columns = [
     field: 'receivingPersonnel',
   },
   { name: 'imageUrl', label: 'Supporting Image', align: 'left' as const, field: 'imageUrl' },
+  { name: 'actions', label: 'Actions', align: 'center' as const, field: '' }, // Add this
 ];
 
 const filteredRows = computed(() => {
@@ -612,8 +883,8 @@ async function addDocument() {
         await addDoc(collection(db, 'incomingDocuments'), {
           ...newDoc,
           uid: auth.currentUser?.uid || null,
-          date: Timestamp.fromDate(new Date(form.value.date)),
-          created_at: Timestamp.now(), // ✅ Add this
+          date: Timestamp.fromDate(new Date(newDoc.date)), // Changed from form.value.date
+          created_at: Timestamp.now(),
         });
 
         await fetchFirestoreData(auth.currentUser?.uid || ''); // Refresh from server
@@ -642,6 +913,150 @@ async function addDocument() {
   } finally {
     isSaving.value = false;
     isSubmitting.value = false;
+  }
+}
+
+// Add these functions in your script section
+
+function openEditDialog(row: DocumentRow, index: number) {
+  editForm.value = { ...row, imageFile: null };
+  editIndex.value = index;
+  showEditDialog.value = true;
+}
+function openOfficeUpdateDialog(row: DocumentRow) {
+  officeUpdateForm.value = {
+    officeName: '', // Start empty, let user fill in
+    receivingPersonnel: '', // Start empty, let user fill in
+    date: '', // Always start empty for new updates
+    imageFile: null,
+    imageUrl: '',
+    data_id: row.id || '', // Only keep the reference ID
+  };
+  showOfficeUpdateDialog.value = true;
+}
+
+function onOfficeUpdateImageSelected(event: Event) {
+  const target = event.target as HTMLInputElement;
+  const files = target.files;
+  if (files && files.length > 0) {
+    officeUpdateForm.value.imageFile = files[0] || null;
+  }
+}
+
+async function saveEdit() {
+  if (editIndex.value === null) return;
+  const row = rows.value[editIndex.value];
+  if (!row || !row.id) return;
+
+  isSaving.value = true;
+  if ($q && $q.loading) {
+    $q.loading.show({
+      message: 'Saving changes...',
+      spinner: QSpinnerCube,
+      spinnerColor: 'primary',
+      backgroundColor: 'white',
+      customClass: 'q-pa-xl',
+    });
+  }
+
+  try {
+    if (navigator.onLine) {
+      const docRef = doc(db, 'incomingDocuments', row.id);
+      await updateDoc(docRef, {
+        particular: editForm.value.particular,
+        date: Timestamp.fromDate(new Date(editForm.value.date)),
+        receivingOffice: editForm.value.receivingOffice,
+        receivingPersonnel: editForm.value.receivingPersonnel,
+      });
+      await fetchFirestoreData(auth.currentUser?.uid || '');
+    } else {
+      rows.value[editIndex.value] = {
+        ...editForm.value,
+        id: row.id,
+        imageUrl: editForm.value.imageUrl || '',
+      };
+      await idbSet('offlineDocuments', JSON.parse(JSON.stringify(rows.value)));
+    }
+    showEditDialog.value = false;
+    toastr.success('Document updated!');
+  } catch (error) {
+    toastr.error('Failed to update document.');
+    console.error(error);
+  } finally {
+    if ($q && $q.loading) $q.loading.hide();
+    isSaving.value = false;
+  }
+}
+
+async function saveOfficeUpdate() {
+  isSaving.value = true;
+  try {
+    let updateNum = 1;
+    let collectionName = `${updateNum}_office_update`;
+
+    while (true) {
+      const qSnap = await getDocs(
+        query(
+          collection(db, collectionName),
+          where('data_id', '==', officeUpdateForm.value.data_id),
+        ),
+      );
+      if (qSnap.empty) {
+        break;
+      }
+      updateNum++;
+      collectionName = `${updateNum}_office_update`;
+    }
+
+    let imageUrl = '';
+    if (officeUpdateForm.value.imageFile) {
+      try {
+        if ($q && $q.loading) {
+          $q.loading.show({ message: 'Uploading image...', spinner: QSpinnerCube });
+        }
+        imageUrl = await uploadToCloudinary(officeUpdateForm.value.imageFile);
+      } catch {
+        if (navigator.onLine) {
+          toastr.error('Image upload failed. Please try again.');
+          if ($q && $q.loading) $q.loading.hide();
+          isSaving.value = false;
+          return;
+        } else {
+          toastr.warning('Cloud upload failed. Saving image locally.');
+          imageUrl = await fileToBase64(officeUpdateForm.value.imageFile);
+        }
+      } finally {
+        if ($q && $q.loading) $q.loading.hide();
+      }
+    }
+
+    if ($q && $q.loading) {
+      $q.loading.show({
+        message: 'Saving office update...',
+        spinner: QSpinnerCube,
+        spinnerColor: 'primary',
+        backgroundColor: 'white',
+        customClass: 'q-pa-xl',
+      });
+    }
+
+    await addDoc(collection(db, collectionName), {
+      officeName: officeUpdateForm.value.officeName,
+      receivingPersonnel: officeUpdateForm.value.receivingPersonnel,
+      date: Timestamp.fromDate(new Date(officeUpdateForm.value.date)),
+      imageUrl,
+      data_id: officeUpdateForm.value.data_id,
+      created_at: Timestamp.now(),
+    });
+
+    toastr.success('Office update saved!');
+    showOfficeUpdateDialog.value = false;
+  } catch (error) {
+    toastr.error('Failed to save office update.');
+    console.error(error);
+  } finally {
+    if ($q && $q.loading) $q.loading.hide();
+    isSaving.value = false;
   }
 }
 </script>

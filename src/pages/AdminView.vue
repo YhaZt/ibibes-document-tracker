@@ -34,47 +34,122 @@
                 </q-th>
               </q-tr>
             </template>
-            <template v-slot:body-cell-index="props">
-              <q-td class="text-grey-8 text-weight-bold">
-                {{ props.rowIndex + 1 }}
-              </q-td>
-            </template>
-            <template v-slot:body-cell-date="props">
-              <q-td>
-                <q-chip color="primary" text-color="white" dense class="ant-chip">
-                  {{ props.row.date }}
-                </q-chip>
-              </q-td>
-            </template>
-            <template v-slot:body-cell-receivingPersonnel="props">
-              <q-td>
-                <q-chip color="secondary" text-color="white" dense class="ant-chip" icon="person">
-                  {{ props.row.receivingPersonnel }}
-                </q-chip>
-              </q-td>
-            </template>
-            <template v-slot:body-cell-imageUrl="props">
-              <q-td>
-                <div
-                  v-if="props.row.imageUrl"
-                  style="
-                    width: 50px;
-                    height: 50px;
-                    overflow: hidden;
-                    border-radius: 8px;
-                    cursor: pointer;
-                  "
-                  @click="openImagePreview(props.row.imageUrl)"
-                >
-                  <img
-                    :src="props.row.imageUrl"
-                    alt="preview"
-                    style="width: 100%; height: 100%; object-fit: cover"
-                    :title="props.row.imageUrl"
-                  />
-                </div>
-                <span v-else class="text-grey-5">No image</span>
-              </q-td>
+            <template v-slot:body="props">
+              <q-tr
+                :props="props"
+                @click="toggleExpand(props.row, props.rowIndex)"
+                style="cursor: pointer"
+              >
+                <q-td>
+                  <q-icon :name="expandedRows[props.rowIndex] ? 'expand_less' : 'expand_more'" />
+                </q-td>
+                <q-td class="text-grey-8 text-weight-bold">
+                  {{ props.rowIndex + 1 }}
+                </q-td>
+                <q-td>{{ props.row.particular }}</q-td>
+                <q-td>
+                  <q-chip color="primary" text-color="white" dense class="ant-chip">
+                    {{ props.row.date }}
+                  </q-chip>
+                </q-td>
+                <!-- ADD THIS MISSING COLUMN -->
+                <q-td>
+                  <q-chip color="info" text-color="white" dense class="ant-chip" icon="business">
+                    {{ props.row.receivingOffice }}
+                  </q-chip>
+                </q-td>
+                <q-td>
+                  <q-chip color="secondary" text-color="white" dense class="ant-chip" icon="person">
+                    {{ props.row.receivingPersonnel }}
+                  </q-chip>
+                </q-td>
+                <q-td>
+                  <div
+                    v-if="props.row.imageUrl"
+                    style="
+                      width: 50px;
+                      height: 50px;
+                      overflow: hidden;
+                      border-radius: 8px;
+                      cursor: pointer;
+                    "
+                    @click="openImagePreview(props.row.imageUrl)"
+                  >
+                    <img
+                      :src="props.row.imageUrl"
+                      alt="preview"
+                      style="width: 100%; height: 100%; object-fit: cover"
+                      :title="props.row.imageUrl"
+                    />
+                  </div>
+                  <span v-else class="text-grey-5">No image</span>
+                </q-td>
+              </q-tr>
+              <q-tr v-if="expandedRows[props.rowIndex]">
+                <q-td colspan="100%">
+                  <q-table
+                    :rows="officeUpdates[props.row.id] || []"
+                    :columns="officeUpdateColumns"
+                    row-key="id"
+                    dense
+                    flat
+                    class="text-center"
+                  >
+                    <template v-slot:header="props">
+                      <q-tr :props="props">
+                        <q-th
+                          v-for="col in props.cols"
+                          :key="col.name"
+                          :props="props"
+                          class="text-center"
+                        >
+                          {{ col.label }}
+                        </q-th>
+                      </q-tr>
+                    </template>
+
+                    <!-- ADD THIS SLOT FOR IMAGE THUMBNAIL -->
+                    <template v-slot:body-cell-imageUrl="props">
+                      <q-td class="text-center">
+                        <div
+                          v-if="props.row.imageUrl"
+                          style="
+                            width: 50px;
+                            height: 50px;
+                            overflow: hidden;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            margin: 0 auto;
+                          "
+                          @click="openImagePreview(props.row.imageUrl)"
+                        >
+                          <img
+                            :src="props.row.imageUrl"
+                            alt="preview"
+                            style="width: 100%; height: 100%; object-fit: cover"
+                            :title="props.row.imageUrl"
+                          />
+                        </div>
+                        <span v-else class="text-grey-5">No image</span>
+                      </q-td>
+                    </template>
+
+                    <template v-slot:body-cell-status="props">
+                      <q-td>
+                        <q-chip
+                          v-if="props.row.isDone"
+                          color="positive"
+                          text-color="white"
+                          dense
+                          icon="check"
+                        >
+                          Done
+                        </q-chip>
+                      </q-td>
+                    </template>
+                  </q-table>
+                </q-td>
+              </q-tr>
             </template>
             <template v-slot:no-data>
               <div class="full-width row flex-center q-gutter-sm q-pa-lg">
@@ -102,48 +177,128 @@
                 </q-th>
               </q-tr>
             </template>
-            <template v-slot:body-cell-index="props">
-              <q-td class="text-grey-8 text-weight-bold">
-                {{ props.rowIndex + 1 }}
-              </q-td>
+
+            <!-- REPLACE THE ENTIRE BODY WITH THIS EXPANDABLE VERSION -->
+            <template v-slot:body="props">
+              <q-tr
+                :props="props"
+                @click="toggleExpand(props.row, props.rowIndex)"
+                style="cursor: pointer"
+              >
+                <q-td>
+                  <q-icon :name="expandedRows[props.rowIndex] ? 'expand_less' : 'expand_more'" />
+                </q-td>
+                <q-td class="text-grey-8 text-weight-bold">
+                  {{ props.rowIndex + 1 }}
+                </q-td>
+                <q-td>{{ props.row.particular }}</q-td>
+                <q-td>
+                  <q-chip color="primary" text-color="white" dense class="ant-chip">
+                    {{ props.row.date }}
+                  </q-chip>
+                </q-td>
+                <q-td>
+                  <q-chip color="info" text-color="white" dense class="ant-chip" icon="business">
+                    {{ props.row.receivingOffice }}
+                  </q-chip>
+                </q-td>
+                <q-td>
+                  <q-chip color="secondary" text-color="white" dense class="ant-chip" icon="person">
+                    {{ props.row.receivingPersonnel }}
+                  </q-chip>
+                </q-td>
+                <q-td>
+                  <div
+                    v-if="props.row.imageUrl"
+                    style="
+                      width: 50px;
+                      height: 50px;
+                      overflow: hidden;
+                      border-radius: 8px;
+                      cursor: pointer;
+                    "
+                    @click="openImagePreview(props.row.imageUrl)"
+                  >
+                    <img
+                      :src="props.row.imageUrl"
+                      alt="preview"
+                      style="width: 100%; height: 100%; object-fit: cover"
+                      :title="props.row.imageUrl"
+                    />
+                  </div>
+                  <span v-else class="text-grey-5">No image</span>
+                </q-td>
+              </q-tr>
+
+              <!-- EXPANDED ROW FOR OFFICE UPDATES -->
+              <q-tr v-if="expandedRows[props.rowIndex]">
+                <q-td colspan="100%">
+                  <q-table
+                    :rows="officeUpdates[props.row.id] || []"
+                    :columns="officeUpdateColumns"
+                    row-key="id"
+                    dense
+                    flat
+                    class="text-center"
+                  >
+                    <template v-slot:header="props">
+                      <q-tr :props="props">
+                        <q-th
+                          v-for="col in props.cols"
+                          :key="col.name"
+                          :props="props"
+                          class="text-center"
+                        >
+                          {{ col.label }}
+                        </q-th>
+                      </q-tr>
+                    </template>
+
+                    <!-- IMAGE THUMBNAIL SLOT -->
+                    <template v-slot:body-cell-imageUrl="props">
+                      <q-td class="text-center">
+                        <div
+                          v-if="props.row.imageUrl"
+                          style="
+                            width: 50px;
+                            height: 50px;
+                            overflow: hidden;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            margin: 0 auto;
+                          "
+                          @click="openImagePreview(props.row.imageUrl)"
+                        >
+                          <img
+                            :src="props.row.imageUrl"
+                            alt="preview"
+                            style="width: 100%; height: 100%; object-fit: cover"
+                            :title="props.row.imageUrl"
+                          />
+                        </div>
+                        <span v-else class="text-grey-5">No image</span>
+                      </q-td>
+                    </template>
+
+                    <!-- STATUS SLOT -->
+                    <template v-slot:body-cell-status="props">
+                      <q-td>
+                        <q-chip
+                          v-if="props.row.isDone"
+                          color="positive"
+                          text-color="white"
+                          dense
+                          icon="check"
+                        >
+                          Done
+                        </q-chip>
+                      </q-td>
+                    </template>
+                  </q-table>
+                </q-td>
+              </q-tr>
             </template>
-            <template v-slot:body-cell-date="props">
-              <q-td>
-                <q-chip color="primary" text-color="white" dense class="ant-chip">
-                  {{ props.row.date }}
-                </q-chip>
-              </q-td>
-            </template>
-            <template v-slot:body-cell-receivingPersonnel="props">
-              <q-td>
-                <q-chip color="secondary" text-color="white" dense class="ant-chip" icon="person">
-                  {{ props.row.receivingPersonnel }}
-                </q-chip>
-              </q-td>
-            </template>
-            <template v-slot:body-cell-imageUrl="props">
-              <q-td>
-                <div
-                  v-if="props.row.imageUrl"
-                  style="
-                    width: 50px;
-                    height: 50px;
-                    overflow: hidden;
-                    border-radius: 8px;
-                    cursor: pointer;
-                  "
-                  @click="openImagePreview(props.row.imageUrl)"
-                >
-                  <img
-                    :src="props.row.imageUrl"
-                    alt="preview"
-                    style="width: 100%; height: 100%; object-fit: cover"
-                    :title="props.row.imageUrl"
-                  />
-                </div>
-                <span v-else class="text-grey-5">No image</span>
-              </q-td>
-            </template>
+
             <template v-slot:no-data>
               <div class="full-width row flex-center q-gutter-sm q-pa-lg">
                 <q-icon size="2em" name="sentiment_dissatisfied" color="grey-5" />
@@ -180,18 +335,28 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { db } from 'boot/firebase';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 
 // 1. Define the DocumentRow interface
 interface DocumentRow {
+  id: string; // <-- Add this line
   particular: string;
   date: string;
   receivingOffice: string;
   receivingPersonnel: string;
   imageUrl?: string;
+}
+
+// 2. Define the OfficeUpdateRow interface
+interface OfficeUpdateRow {
+  officeName: string;
+  receivingPersonnel: string;
+  date: string;
+  imageUrl?: string;
+  isDone?: boolean;
 }
 
 const router = useRouter();
@@ -201,9 +366,12 @@ const incomingRows = ref<DocumentRow[]>([]);
 const showImagePreview = ref(false);
 const previewImageUrl = ref('');
 const pagination = ref({ page: 1, rowsPerPage: 10 });
+const expandedRows = ref<Record<string, boolean>>({});
+const officeUpdates = ref<Record<string, OfficeUpdateRow[]>>({});
 
 const columns = [
-  { name: 'index', label: 'No.', align: 'left' as const, field: '' },
+  { name: 'expand', label: '', align: 'left' as const, field: '' }, // <-- blank label for arrow
+  { name: 'index', label: 'No.', align: 'left' as const, field: '' }, // <-- No. for numbering
   { name: 'particular', label: 'Particular', align: 'left' as const, field: 'particular' },
   { name: 'date', label: 'Date', align: 'left' as const, field: 'date' },
   {
@@ -220,6 +388,18 @@ const columns = [
   },
   { name: 'imageUrl', label: 'Supporting Image', align: 'left' as const, field: 'imageUrl' },
 ];
+const officeUpdateColumns = [
+  { name: 'officeName', label: 'Office Name', field: 'officeName', align: 'center' as const },
+  {
+    name: 'receivingPersonnel',
+    label: 'Receiving Personnel',
+    field: 'receivingPersonnel',
+    align: 'center' as const,
+  },
+  { name: 'date', label: 'Date', field: 'date', align: 'center' as const },
+  { name: 'imageUrl', label: 'Image', field: 'imageUrl', align: 'center' as const },
+  { name: 'status', label: 'Status', field: 'isDone', align: 'center' as const },
+];
 
 function openImagePreview(url: string) {
   previewImageUrl.value = url;
@@ -229,7 +409,7 @@ function openImagePreview(url: string) {
 function logout() {
   localStorage.removeItem('isAdmin');
   toastr.info('Logged out');
-  void router.push({ name: 'login' });
+  void router.push({ name: 'LoginPage' });
 }
 
 async function fetchAllData() {
@@ -240,6 +420,7 @@ async function fetchAllData() {
   outgoingRows.value = outgoingSnap.docs.map((doc) => {
     const data = doc.data();
     return {
+      id: doc.id, // <-- Add this line
       particular: data.particular,
       date:
         data.date && data.date.toDate ? data.date.toDate().toISOString().split('T')[0] : data.date,
@@ -255,6 +436,7 @@ async function fetchAllData() {
   incomingRows.value = incomingSnap.docs.map((doc) => {
     const data = doc.data();
     return {
+      id: doc.id, // <-- Add this line
       particular: data.particular,
       date:
         data.date && data.date.toDate ? data.date.toDate().toISOString().split('T')[0] : data.date,
@@ -265,11 +447,47 @@ async function fetchAllData() {
   });
 }
 
+async function fetchOfficeUpdates(dataId: string): Promise<OfficeUpdateRow[]> {
+  const updates: OfficeUpdateRow[] = [];
+  let updateNum = 1;
+  while (true) {
+    const collectionName = `${updateNum}_office_update`;
+    const qSnap = await getDocs(
+      query(collection(db, collectionName), where('data_id', '==', dataId)),
+    );
+    if (qSnap.empty) break;
+    qSnap.forEach((doc) => {
+      const data = doc.data();
+      updates.push({
+        officeName: data.officeName,
+        receivingPersonnel: data.receivingPersonnel,
+        date:
+          data.date && data.date.toDate
+            ? data.date.toDate().toISOString().split('T')[0]
+            : data.date,
+        imageUrl: data.imageUrl || '',
+        isDone: true, // will update below
+      });
+    });
+    updateNum++;
+  }
+  // Mark all except last as done
+  updates.forEach((u, i) => (u.isDone = i !== updates.length - 1));
+  return updates;
+}
+
+async function toggleExpand(row: DocumentRow, rowIndex: number) {
+  expandedRows.value[rowIndex] = !expandedRows.value[rowIndex];
+  if (expandedRows.value[rowIndex] && !officeUpdates.value[row.id]) {
+    officeUpdates.value[row.id] = await fetchOfficeUpdates(row.id);
+  }
+}
+
 onMounted(() => {
   // Only allow if admin
   if (localStorage.getItem('isAdmin') !== 'true') {
     toastr.error('Unauthorized. Please login as admin.');
-    void router.push({ name: 'login' });
+    void router.push({ name: 'LoginPage' });
     return;
   }
   void fetchAllData();

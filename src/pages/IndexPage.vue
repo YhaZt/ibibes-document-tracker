@@ -125,14 +125,110 @@
 
         <template v-slot:body-cell-actions="props">
           <q-td align="center">
+            <!-- Edit Button (existing) -->
             <q-btn
               size="sm"
               color="primary"
-              icon="edit"
               flat
               round
               @click="openEditDialog(props.row, props.rowIndex)"
-            />
+              class="q-ml-xs"
+            >
+              <!-- Use default slot for custom SVG icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 100 100">
+                <path
+                  d="M19.434,93.975c-5.265,0-9.548-4.283-9.548-9.548V27.523c0-5.265,4.283-9.548,9.548-9.548h47.639l5.46-5.461 c1.562-1.561,3.753-2.456,6.012-2.456c2.261,0,4.452,0.896,6.012,2.458l7.068,7.068c1.604,1.604,2.489,3.739,2.489,6.011 c0,2.271-0.885,4.406-2.489,6.011l-5.738,5.738v47.082c0,5.265-4.283,9.548-9.549,9.548H19.434z"
+                  opacity=".35"
+                ></path>
+                <path
+                  fill="#f2f2f2"
+                  d="M17.434,91.975c-5.265,0-9.548-4.283-9.548-9.548V25.523c0-5.265,4.283-9.548,9.548-9.548h47.639 l5.46-5.461c1.562-1.561,3.753-2.456,6.012-2.456c2.261,0,4.452,0.896,6.012,2.458l7.068,7.068 c1.604,1.604,2.489,3.739,2.489,6.011c0,2.271-0.885,4.406-2.489,6.011l-5.738,5.738v47.082c0,5.265-4.283,9.548-9.549,9.548 H17.434z"
+                ></path>
+                <path
+                  fill="#d9eeff"
+                  d="M74.337,85.475H17.434c-1.684,0-3.048-1.365-3.048-3.048V25.524c0-1.684,1.365-3.048,3.048-3.048 h56.903c1.684,0,3.048,1.365,3.048,3.048v56.903C77.386,84.11,76.021,85.475,74.337,85.475z"
+                ></path>
+                <rect
+                  width="11.195"
+                  height="9"
+                  x="71.653"
+                  y="18.389"
+                  fill="#f4665c"
+                  transform="rotate(45.001 77.251 22.888)"
+                ></rect>
+                <rect
+                  width="10.969"
+                  height="39.647"
+                  x="52.903"
+                  y="21.928"
+                  fill="#f9b84f"
+                  transform="rotate(45.001 58.388 41.751)"
+                ></rect>
+                <rect
+                  width="11.014"
+                  height="4"
+                  x="68.312"
+                  y="24.32"
+                  fill="#9aa2e6"
+                  transform="rotate(45.001 73.82 26.32)"
+                ></rect>
+                <polygon
+                  fill="#fedeb3"
+                  points="38.006,62.133 40.492,51.891 48.248,59.647"
+                ></polygon>
+                <path
+                  fill="#40396e"
+                  d="M74.337,86.975H17.434c-2.508,0-4.548-2.041-4.548-4.548V25.523c0-2.508,2.04-4.548,4.548-4.548 h49.71l6.925-6.925c1.323-1.322,3.63-1.321,4.949,0l7.071,7.071c1.365,1.365,1.365,3.585,0,4.95l-7.203,7.203v49.153 C78.886,84.935,76.845,86.975,74.337,86.975z M17.434,23.975c-0.854,0-1.548,0.695-1.548,1.548v56.903 c0,0.854,0.694,1.548,1.548,1.548h56.903c0.854,0,1.549-0.694,1.549-1.548V32.653c0-0.398,0.158-0.779,0.439-1.061l7.643-7.643 c0.195-0.195,0.195-0.512,0-0.708l-7.071-7.071c-0.127-0.127-0.275-0.146-0.354-0.146c-0.077,0-0.227,0.019-0.354,0.146 l-7.364,7.364c-0.281,0.281-0.663,0.439-1.061,0.439H17.434z"
+                ></path>
+                <polygon fill="#40396e" points="39.44,56.227 38.006,62.133 43.912,60.7"></polygon>
+              </svg>
+            </q-btn>
+            <!-- Office Update Button (new) -->
+            <q-btn
+              size="sm"
+              color="secondary"
+              flat
+              round
+              @click="openOfficeUpdateDialog(props.row)"
+              class="q-ml-xs"
+            >
+              <!-- Use your SVG icon here -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="22"
+                height="22"
+                viewBox="0 0 40 40"
+              >
+                <rect width="3" height="6" x="27.5" y="12.5" fill="#bae0bd"></rect>
+                <path fill="#5e9c76" d="M31,19h-4v-7h4V19z M28,18h2v-5h-2V18z"></path>
+                <rect width="3" height="10" x="30.5" y="8.5" fill="#8bb7f0"></rect>
+                <path fill="#4e7ab5" d="M34,19h-4V8h4V19z M31,18h2V9h-2V18z"></path>
+                <rect width="3" height="8" x="33.5" y="10.5" fill="#f78f8f"></rect>
+                <path fill="#c74343" d="M37,19h-4v-9h4V19z M34,18h2v-7h-2V18z"></path>
+                <rect width="4" height="3.947" x="11.5" y="13.84" fill="#b0c1d4"></rect>
+                <path
+                  fill="#66798f"
+                  d="M16,18.287h-5V13.34h5V18.287z M12,17.287h3V14.34h-3V17.287z"
+                ></path>
+                <rect width="9" height="1" x="9" y="17" fill="#66798f"></rect>
+                <rect width="20" height="12" x="3.5" y="2.5" fill="#c2e8ff"></rect>
+                <path fill="#66798f" d="M24,15H3V2h21V15z M4,14h19V3H4V14z"></path>
+                <rect width="18" height="5" x="5.5" y="20.5" fill="#dbb065"></rect>
+                <path fill="#967a44" d="M24,26H5v-6h19V26z M6,25h17v-4H6V25z"></path>
+                <rect width="13" height="18" x="23.5" y="20.5" fill="#f5ce85"></rect>
+                <path fill="#967a44" d="M37,39H23V20h14V39z M24,38h12V21H24V38z"></path>
+                <rect width="37" height="2" x="1.5" y="18.5" fill="#f5ce85"></rect>
+                <path fill="#967a44" d="M39,21H1v-3h38V21z M2,20h36v-1H2V20z"></path>
+                <path fill="#66798f" d="M3.5,13v1.5h20V13H3.5z"></path>
+                <rect width="2" height="18" x="3.5" y="20.5" fill="#f5ce85"></rect>
+                <path fill="#967a44" d="M6,39H3V20h3V39z M4,38h1V21H4V38z"></path>
+                <rect width="4" height="1" x="28" y="33.5" fill="#967a44"></rect>
+                <rect width="4" height="1" x="28" y="24.5" fill="#967a44"></rect>
+                <rect width="13" height="1" x="23.5" y="29" fill="#967a44"></rect>
+              </svg>
+            </q-btn>
           </q-td>
         </template>
 
@@ -329,6 +425,79 @@
       </div>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="showOfficeUpdateDialog">
+    <q-card style="min-width: 350px; max-width: 90vw">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Office Update</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+      <q-separator />
+      <q-card-section>
+        <q-form @submit.prevent="saveOfficeUpdate">
+          <q-input
+            v-model="officeUpdateForm.officeName"
+            label="Office Name"
+            dense
+            outlined
+            class="q-mb-md"
+            required
+          />
+          <q-input
+            v-model="officeUpdateForm.receivingPersonnel"
+            label="Receiving Personnel"
+            dense
+            outlined
+            class="q-mb-md"
+            required
+          />
+          <q-input
+            v-model="officeUpdateForm.date"
+            label="Date"
+            dense
+            outlined
+            class="q-mb-md"
+            type="date"
+            required
+          />
+          <div class="q-mb-md">
+            <label class="q-mb-xs">Image</label>
+            <q-btn
+              color="primary"
+              outline
+              icon="photo_library"
+              label="Select Image"
+              @click="officeUpdateImageInput?.click()"
+              class="q-ml-sm"
+            />
+            <input
+              ref="officeUpdateImageInput"
+              type="file"
+              accept="image/*"
+              style="display: none"
+              @change="onOfficeUpdateImageSelected"
+            />
+            <div v-if="officeUpdateForm.imageFile" class="q-mt-sm text-grey-6">
+              Selected: {{ officeUpdateForm.imageFile.name }}
+            </div>
+          </div>
+          <div class="row justify-end q-gutter-sm q-mt-md">
+            <q-btn flat label="Cancel" color="grey-7" v-close-popup />
+            <q-btn
+              type="submit"
+              color="primary"
+              label="Save"
+              :disable="
+                !officeUpdateForm.officeName ||
+                !officeUpdateForm.receivingPersonnel ||
+                !officeUpdateForm.date
+              "
+            />
+          </div>
+        </q-form>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -343,6 +512,7 @@ import {
   where,
   orderBy,
   updateDoc,
+  doc,
 } from 'firebase/firestore';
 import { uploadToCloudinary } from 'boot/cloudinaryUpload';
 import { useRouter } from 'vue-router';
@@ -371,9 +541,11 @@ const showImagePreview = ref(false);
 const previewImageUrl = ref('');
 const cameraInput = ref<HTMLInputElement>();
 const galleryInput = ref<HTMLInputElement>();
+const officeUpdateImageInput = ref<HTMLInputElement>();
 
 // Types
 interface DocumentRow {
+  id?: string;
   particular: string;
   date: string;
   receivingOffice: string;
@@ -383,7 +555,14 @@ interface DocumentRow {
 interface FormRow extends DocumentRow {
   imageFile: File | null;
 }
-
+interface OfficeUpdateRow {
+  officeName: string;
+  receivingPersonnel: string;
+  date: string;
+  imageFile: File | null;
+  imageUrl?: string;
+  data_id: string;
+}
 // State
 const form = ref<FormRow>({
   particular: '',
@@ -401,8 +580,27 @@ const editForm = ref<FormRow>({
   imageUrl: '',
   imageFile: null,
 });
+const showOfficeUpdateDialog = ref(false);
+const officeUpdateForm = ref<OfficeUpdateRow>({
+  officeName: '',
+  receivingPersonnel: '',
+  date: '',
+  imageFile: null,
+  imageUrl: '',
+  data_id: '',
+});
 const editIndex = ref<number | null>(null);
-
+function openOfficeUpdateDialog(row: DocumentRow) {
+  officeUpdateForm.value = {
+    officeName: '',
+    receivingPersonnel: '',
+    date: '',
+    imageFile: null,
+    imageUrl: '',
+    data_id: row.id || '',
+  };
+  showOfficeUpdateDialog.value = true;
+}
 const pagination = ref({
   page: 1,
   rowsPerPage: 5,
@@ -421,53 +619,57 @@ function openEditDialog(row: DocumentRow, index: number) {
 async function saveEdit() {
   if (editIndex.value === null) return;
   const row = rows.value[editIndex.value];
-  if (!row) return;
+  if (!row || !row.id) return;
 
-  // Update Firestore if online
-  if (navigator.onLine) {
-    const snapshot = await getDocs(
-      query(
-        collection(db, 'outgoingDocuments'),
-        where('uid', '==', auth.currentUser?.uid || ''),
+  isSaving.value = true;
+  if ($q && $q.loading && typeof $q.loading.show === 'function') {
+    $q.loading.show({
+      message: 'Saving changes...',
+      spinner: QSpinnerCube,
+      spinnerColor: 'primary',
+      backgroundColor: 'white',
+      customClass: 'q-pa-xl',
+    });
+  }
 
-        where('particular', '==', row.particular),
-        where('date', '==', row.date),
-        where('receivingOffice', '==', row.receivingOffice),
-      ),
-    );
-    for (const docSnap of snapshot.docs) {
-      await updateDoc(docSnap.ref, {
+  try {
+    if (navigator.onLine) {
+      const docRef = doc(db, 'outgoingDocuments', row.id);
+      await updateDoc(docRef, {
         particular: editForm.value.particular,
-        date: editForm.value.date,
+        date: Timestamp.fromDate(new Date(editForm.value.date)),
         receivingOffice: editForm.value.receivingOffice,
         receivingPersonnel: editForm.value.receivingPersonnel,
-        // imageUrl: editForm.value.imageUrl, // add if you want to edit image
       });
+      await fetchFirestoreData(auth.currentUser?.uid || '');
+    } else {
+      rows.value[editIndex.value] = {
+        ...editForm.value,
+        id: row.id,
+        imageUrl: editForm.value.imageUrl ?? '',
+      };
+      await idbSet('offlineDocuments', JSON.parse(JSON.stringify(rows.value)));
     }
+    showEditDialog.value = false;
+    toastr.success('Document updated!');
+  } catch (error) {
+    toastr.error('Failed to update document.');
+    console.error(error);
+  } finally {
+    if ($q && $q.loading && typeof $q.loading.hide === 'function') {
+      $q.loading.hide();
+    }
+    isSaving.value = false;
   }
-  // Update local rows
-  rows.value[editIndex.value] = {
-    particular: editForm.value.particular,
-    date: editForm.value.date,
-    receivingOffice: editForm.value.receivingOffice,
-    receivingPersonnel: editForm.value.receivingPersonnel,
-    imageUrl: editForm.value.imageUrl ?? '', // ensure string, not undefined
-  };
-  showEditDialog.value = false;
-  toastr.success('Document updated!');
 }
-
-// ✅ Fix ESLint - Async wrapper for 'online' event
 window.addEventListener('online', () => {
   void handleOnline();
 });
 async function handleOnline() {
   isOnline.value = true;
   toastr.info('Back online. Syncing and refreshing data...');
-  // Wait for Firebase Auth to be ready
   let user = auth.currentUser;
   if (!user) {
-    // Wait for onAuthStateChanged to fire
     await new Promise((resolve) => {
       const unsubscribe = onAuthStateChanged(auth, (u) => {
         if (u) {
@@ -476,7 +678,6 @@ async function handleOnline() {
           resolve(u);
         }
       });
-      // Fallback: resolve after 3 seconds even if no user
       setTimeout(() => {
         unsubscribe();
         resolve(null);
@@ -492,7 +693,6 @@ async function handleOnline() {
   }
 }
 
-// Offline event (sync)
 window.addEventListener('offline', () => {
   isOnline.value = false;
   toastr.warning('You are now offline. Changes will be saved locally.');
@@ -544,6 +744,7 @@ async function fetchFirestoreData(uid: string) {
     snapshot.forEach((doc) => {
       const data = doc.data();
       results.push({
+        id: doc.id,
         particular: data.particular || '',
         date:
           data.date && typeof data.date.toDate === 'function'
@@ -649,7 +850,7 @@ const columns = [
     field: 'receivingPersonnel',
   },
   { name: 'imageUrl', label: 'Supporting Image', align: 'left' as const, field: 'imageUrl' },
-  { name: 'actions', label: 'Actions', align: 'center' as const, field: '' }, // <-- Add this
+  { name: 'actions', label: 'Actions', align: 'center' as const, field: '' },
 ];
 const filteredRows = computed(() => {
   const q = search.value.toLowerCase();
@@ -683,6 +884,14 @@ function onGalleryFileSelected(event: Event) {
   const files = target.files;
   if (files && files.length > 0) {
     form.value.imageFile = files[0] || null;
+  }
+}
+
+function onOfficeUpdateImageSelected(event: Event) {
+  const target = event.target as HTMLInputElement;
+  const files = target.files;
+  if (files && files.length > 0) {
+    officeUpdateForm.value.imageFile = files[0] || null;
   }
 }
 
@@ -795,6 +1004,78 @@ async function addDocument() {
   } finally {
     isSaving.value = false;
     isSubmitting.value = false;
+  }
+}
+
+async function saveOfficeUpdate() {
+  isSaving.value = true;
+  try {
+    let updateNum = 1;
+    let collectionName = `${updateNum}_office_update`;
+
+    while (true) {
+      const qSnap = await getDocs(
+        query(
+          collection(db, collectionName),
+          where('data_id', '==', officeUpdateForm.value.data_id),
+        ),
+      );
+      if (qSnap.empty) {
+        break;
+      }
+      updateNum++;
+      collectionName = `${updateNum}_office_update`;
+    }
+
+    let imageUrl = '';
+    if (officeUpdateForm.value.imageFile) {
+      try {
+        if ($q && $q.loading) {
+          $q.loading.show({ message: 'Uploading image...', spinner: QSpinnerCube });
+        }
+        imageUrl = await uploadToCloudinary(officeUpdateForm.value.imageFile);
+      } catch {
+        if (navigator.onLine) {
+          toastr.error('Image upload failed. Please try again.');
+          if ($q && $q.loading) $q.loading.hide();
+          isSaving.value = false;
+          return; // Don't save base64 if online
+        } else {
+          toastr.warning('Cloud upload failed. Saving image locally.');
+          imageUrl = await fileToBase64(officeUpdateForm.value.imageFile);
+        }
+      } finally {
+        if ($q && $q.loading) $q.loading.hide();
+      }
+    }
+
+    if ($q && $q.loading) {
+      $q.loading.show({
+        message: 'Saving office update...',
+        spinner: QSpinnerCube,
+        spinnerColor: 'primary',
+        backgroundColor: 'white',
+        customClass: 'q-pa-xl',
+      });
+    }
+
+    await addDoc(collection(db, collectionName), {
+      officeName: officeUpdateForm.value.officeName,
+      receivingPersonnel: officeUpdateForm.value.receivingPersonnel,
+      date: Timestamp.fromDate(new Date(officeUpdateForm.value.date)),
+      imageUrl,
+      data_id: officeUpdateForm.value.data_id,
+      created_at: Timestamp.now(),
+    });
+
+    toastr.success('Office update saved!');
+    showOfficeUpdateDialog.value = false;
+  } catch (error) {
+    toastr.error('Failed to save office update.');
+    console.error(error);
+  } finally {
+    if ($q && $q.loading) $q.loading.hide();
+    isSaving.value = false;
   }
 }
 </script>
